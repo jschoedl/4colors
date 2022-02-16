@@ -1,5 +1,5 @@
 import React from 'react';
-import {ForceGraph2D} from "react-force-graph";
+import ColoredGraph from "./components/ColoredGraph";
 
 function App() {
     const data = {
@@ -14,14 +14,7 @@ function App() {
             {"source": 2, "target": 3},
         ]
     }
-    return (
-        <ForceGraph2D
-            graphData={data}
-            nodeAutoColorBy="group"
-            nodeRelSize={7}
-            linkWidth={4}
-        />
-    );
+    return <ColoredGraph data={data}/>;
 }
 
 export default App;
