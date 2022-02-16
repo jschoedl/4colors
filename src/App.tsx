@@ -1,26 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {ForceGraph2D} from "react-force-graph";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const data = {
+        "nodes": [
+            {"id": 1, "group": 1},
+            {"id": 2, "group": 2},
+            {"id": 3, "group": 3},
+        ],
+        "links": [
+            {"source": 1, "target": 2},
+            {"source": 1, "target": 3},
+            {"source": 2, "target": 3},
+        ]
+    }
+    return (
+        <ForceGraph2D
+            graphData={data}
+            nodeAutoColorBy="group"
+            nodeRelSize={7}
+            linkWidth={4}
+        />
+    );
 }
 
 export default App;
