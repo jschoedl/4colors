@@ -53,7 +53,7 @@ export default class ColoredGraph extends React.Component {
         if (this.state.nodes.length > prevState.nodes.length && prevState.nodes.length) {
             const highestIndex = this.state.nodes.length - 1
             let newEdges = []
-            const numberOfEdges = Math.floor(Math.random()*2 + 1)
+            const numberOfEdges = Math.floor(Math.random() * 2 + 1)
             for (let i = 0; i < numberOfEdges; i++) {
                 newEdges.push({
                     "source": highestIndex,
@@ -82,12 +82,14 @@ export default class ColoredGraph extends React.Component {
             }))
         };
 
-        return <ForceGraph2D
-            graphData={{nodes: this.state.nodes, links: this.state.edges}}
-            nodeRelSize={4}
-            linkWidth={6}
-            link
-            onBackgroundClick={addNode}
-        />
+        return <div className="background">
+            <ForceGraph2D
+                graphData={{nodes: this.state.nodes, links: this.state.edges}}
+                nodeRelSize={4}
+                linkWidth={6}
+                link
+                onBackgroundClick={addNode}
+            />
+        </div>
     }
 }

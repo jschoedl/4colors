@@ -1,8 +1,9 @@
 import React from 'react';
-import ColoredGraph, {COLORS} from "./components/ColoredGraph";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import GraphViewer from "./components/GraphViewer";
 
 function App() {
-    return <ColoredGraph nodes={[]} edges={[]}/>;
+    return <GraphViewer/>
 }
 
 export default App;
