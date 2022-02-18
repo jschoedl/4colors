@@ -18,10 +18,11 @@ export default class ColoredGraph extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            nodes: this.props.nodes,
-            edges: this.props.edges,
-            numberOfColors: this.props.nodes.length,
+            nodes: props.nodes,
+            edges: props.edges,
+            numberOfColors: props.nodes.length,
         }
+        this.setDisplayMode = props.setDisplayMode;
     }
 
     findMinimalKColoring() {
@@ -49,22 +50,37 @@ export default class ColoredGraph extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.nodes.length > prevState.nodes.length && prevState.nodes.length) {
-            const highestIndex = this.state.nodes.length - 1
-            let newEdges = []
-            const numberOfEdges = Math.floor(Math.random() * 2 + 1)
-            for (let i = 0; i < numberOfEdges; i++) {
-                newEdges.push({
-                    "source": highestIndex,
-                    "target": Math.floor((i + Math.random()) * highestIndex / numberOfEdges)
-                })
-            }
-            this.setState(
-                prevState => ({edges: [...prevState.edges, ...newEdges]}),
-                () => setTimeout(() => this.findMinimalKColoring(), 10)
-            )
+    insertRandomNode() {
+        const highestIndex = this.state.nodes.length - 1
+        let newEdges = []
+        const numberOfEdges = Math.floor(Math.random() * 2 + 1)
+        for (let i = 0; i < numberOfEdges; i++) {
+            newEdges.push({
+                "source": highestIndex,
+                "target": Math.floor((i + Math.random()) * highestIndex / numberOfEdges)
+            })
         }
+        this.setState(
+            prevState => ({edges: [...prevState.edges, ...newEdges]}),
+            () => setTimeout(() => this.findMinimalKColoring(), 10)
+        )
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.nodes !== prevState.nodes) {
+            this.setDisplayMode('custom')
+
+            if (this.state.nodes.length > prevState.nodes.length && prevState.nodes.length) {
+                this.insertRandomNode()
+            }
+        }
+
+        if (prevProps !== this.props && this.props.nodes !== undefined)
+            this.setState({
+                nodes: this.props.nodes,
+                edges: this.props.edges,
+                numberOfColors: this.props.nodes.length,
+            })
     }
 
     render() {
