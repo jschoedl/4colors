@@ -22,7 +22,7 @@ export default class ColoredGraph extends React.Component {
             edges: props.edges,
             numberOfColors: props.nodes.length,
         }
-        this.setDisplayMode = props.setDisplayMode;
+        this.setDisplayMode = props.setDisplayMode
     }
 
     findMinimalKColoring() {
@@ -67,14 +67,6 @@ export default class ColoredGraph extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.nodes !== prevState.nodes) {
-            this.setDisplayMode('custom')
-
-            if (this.state.nodes.length > prevState.nodes.length && prevState.nodes.length) {
-                this.insertRandomNode()
-            }
-        }
-
         if (prevProps !== this.props && this.props.nodes !== undefined)
             this.setState({
                 nodes: this.props.nodes,
@@ -83,27 +75,28 @@ export default class ColoredGraph extends React.Component {
             })
     }
 
-    render() {
-        const addNode = () => {
-            this.setState(prevState => ({
-                nodes: [
-                    ...prevState.nodes,
-                    {
-                        id: prevState.nodes.length,
-                        group: prevState.numberOfColors,
-                        color: COLORS[prevState.numberOfColors],
-                    }
-                ],
-                numberOfColors: prevState.numberOfColors + 1,
-            }))
-        };
+    addNode ()  {
+        this.setDisplayMode('custom')
+        this.setState(prevState => ({
+            nodes: [
+                ...prevState.nodes,
+                {
+                    id: prevState.nodes.length,
+                    group: prevState.numberOfColors,
+                    color: COLORS[prevState.numberOfColors],
+                }
+            ],
+            numberOfColors: prevState.numberOfColors + 1,
+        }), this.insertRandomNode)
+    }
 
+    render() {
+        const addNode = this.addNode.bind(this)
         return <div className="background">
             <ForceGraph2D
                 graphData={{nodes: this.state.nodes, links: this.state.edges}}
                 nodeRelSize={4}
                 linkWidth={6}
-                link
                 onBackgroundClick={addNode}
             />
         </div>

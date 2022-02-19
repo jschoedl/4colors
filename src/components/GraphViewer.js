@@ -13,7 +13,7 @@ export default class GraphViewer extends React.Component {
     }
 
     setDisplayMode(newDisplayMode) {
-        this.setState({displayMode: newDisplayMode})
+        this.setState({displayMode: newDisplayMode}, () => console.log(this.state.displayMode))
     }
 
     render() {
