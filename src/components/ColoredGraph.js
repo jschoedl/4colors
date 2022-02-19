@@ -1,6 +1,7 @@
 import {ForceGraph2D} from "react-force-graph";
 import React from "react";
 import {randomInteger, withoutDuplicateObjects} from "../lib/helpers";
+import {containedEdges, isProperColoring} from "../lib/graphHelpers";
 
 export const COLORS = [
     "#28536b",
@@ -26,57 +27,26 @@ export default class ColoredGraph extends React.Component {
         this.setDisplayMode = props.setDisplayMode
     }
 
-    static isProperColoring(nodes, edges) {
-        for (let node of nodes) {
-            for (let edge of this.incidentEdges(node, edges)) {
-                if (edge.source.group === edge.target.group)
-                    return false
-            }
-        }
-        return true;
-    }
-
-    static idIsIncluded(nodes, id) {
-        for (let node of nodes)
-            if (node.id === id || node === id)
-                return true
-        return false
-    }
-
-    static containedEdges(nodes, edges) {
-        return edges.filter(edge => (
-            (ColoredGraph.idIsIncluded(nodes, edge.source) && ColoredGraph.idIsIncluded(nodes, edge.target))
-        ))
-    }
-
-    static incidentEdges(node, edges) {
-        return edges.filter(edge => edge.source.id === node.id || edge.target.id === node.id)
-    }
-
-    async setStateAsync(newState) {
-        return new Promise(resolve =>
-            this.setState(newState, resolve)
-        )
-    }
-
     findKColoring(k) {
         let nextIndex = 0;
         let newNodes = [], newEdges = []
         let initialNodes = [...this.state.nodes], initialEdges = [...this.state.edges]
 
         while (true) {
-            if (ColoredGraph.isProperColoring(newNodes, newEdges)) {
+            if (isProperColoring(newNodes, newEdges)) {
                 if (initialNodes.length === newNodes.length)
                     break;
 
                 newNodes.push(initialNodes[nextIndex])
                 newNodes[newNodes.length - 1].group = 0
-                newEdges = ColoredGraph.containedEdges(newNodes, initialEdges)
+                newEdges = containedEdges(newNodes, initialEdges)
                 nextIndex++
             } else {
                 while (newNodes[newNodes.length - 1].group === k - 1) {
                     newNodes.pop()
                     nextIndex--
+                    if (nextIndex === 0)
+                        return false;
                 }
                 newNodes[newNodes.length - 1].group++
             }
@@ -86,6 +56,7 @@ export default class ColoredGraph extends React.Component {
             nodes: newNodes,
             edges: initialEdges,
         }, this.updateColors)
+        return true;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -127,7 +98,7 @@ export default class ColoredGraph extends React.Component {
                 edges: [...prevState.edges, ...newEdges],
                 numberOfColors: prevState.numberOfColors + 1,
             }
-        }, () => setTimeout(() => this.findKColoring(4), 10))
+        }, () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
     render() {
@@ -151,5 +122,11 @@ export default class ColoredGraph extends React.Component {
         this.setState({
             nodes: newNodes,
         })
+    }
+
+    minimalKColoring() {
+        for (let k = 1; k <= 10; k++)
+            if (this.findKColoring(k))
+                return;
     }
 }
