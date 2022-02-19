@@ -4,16 +4,16 @@ import {randomInteger, withoutDuplicateObjects} from "../lib/helpers";
 import {containedEdges, isProperColoring} from "../lib/graphHelpers";
 
 export const COLORS = [
-    "#28536b",
-    "#c2948a",
-    "#7ea8be",
-    "#f6f0ed",
-    "#bbb193",
-    "#7fb069",
-    "#f3f9d2",
-    "#6b2d5c",
-    "#3ddc97",
-    "#c2f9bb",
+    "#264653",
+    "#2a9d8f",
+    "#e9c46a",
+    "#ff31b6",
+    "#e76f51",
+    "#af4d98",
+    "#b7245c",
+    "#32161f",
+    "#f4a261",
+    "#483d03"
 ]
 
 export default class ColoredGraph extends React.Component {
@@ -128,7 +128,7 @@ export default class ColoredGraph extends React.Component {
         for (let k = 1; k <= 10; k++) {
             console.log(k)
             if (this.findKColoring(k)) {
-                this.setChromaticNumber("= "+k)
+                this.setChromaticNumber("= " + k)
                 return
             }
         }
