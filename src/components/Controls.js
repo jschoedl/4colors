@@ -13,8 +13,9 @@ export default function Controls(props) {
 
     return <div className="menu top right">
         <Stack gap={3}>
-            <DisplayModeButton>empty</DisplayModeButton>
-            <DisplayModeButton>square</DisplayModeButton>
+            <DisplayModeButton>Empty Graph</DisplayModeButton>
+            <DisplayModeButton>Pentagon</DisplayModeButton>
+            <DisplayModeButton>Hexagon</DisplayModeButton>
         </Stack>
     </div>
 }

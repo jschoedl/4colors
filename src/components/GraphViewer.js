@@ -8,7 +8,7 @@ export default class GraphViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            displayMode: 'empty',
+            displayMode: 'Empty Graph',
             chromaticNumber: 1,
         }
         this.setDisplayMode = this.setDisplayMode.bind(this)
