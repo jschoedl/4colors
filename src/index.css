@@ -32,3 +32,8 @@ body {
 .left {
     left: 0;
 }
+
+.formula{
+    font-size: 2em;
+    font-family: math;
+}

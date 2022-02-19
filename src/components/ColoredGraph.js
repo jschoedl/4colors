@@ -25,6 +25,7 @@ export default class ColoredGraph extends React.Component {
             numberOfColors: props.nodes.length,
         }
         this.setDisplayMode = props.setDisplayMode
+        this.setChromaticNumber = props.setChromaticNumber
     }
 
     findKColoring(k) {
@@ -126,7 +127,9 @@ export default class ColoredGraph extends React.Component {
 
     minimalKColoring() {
         for (let k = 1; k <= 10; k++)
-            if (this.findKColoring(k))
-                return;
+            if (this.findKColoring(k)) {
+                this.setChromaticNumber(k)
+                return
+            }
     }
 }
