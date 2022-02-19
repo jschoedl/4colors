@@ -28,7 +28,13 @@ export default class GraphViewer extends React.Component {
         return <>
             <ChromaticNumber chromaticNumber={this.state.chromaticNumber}/>
             <Controls setDisplayMode={this.setDisplayMode} displayMode={this.state.displayMode}/>
-            <ColoredGraph nodes={nodes} edges={edges} setDisplayMode={this.setDisplayMode} setChromaticNumber={this.setChromaticNumber}/>
+            <ColoredGraph
+                nodes={nodes}
+                edges={edges}
+                setDisplayMode={this.setDisplayMode}
+                displayMode={this.state.displayMode}
+                setChromaticNumber={this.setChromaticNumber}
+            />
         </>
     }
 }

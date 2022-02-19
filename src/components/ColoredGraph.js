@@ -22,7 +22,7 @@ export default class ColoredGraph extends React.Component {
         this.state = {
             nodes: props.nodes,
             edges: props.edges,
-            numberOfColors: props.nodes.length,
+            displayMode: props.displayMode,
         }
         this.setDisplayMode = props.setDisplayMode
         this.setChromaticNumber = props.setChromaticNumber
@@ -61,12 +61,12 @@ export default class ColoredGraph extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps !== this.props && this.props.nodes !== undefined)
+        if (this.props.displayMode !== this.state.displayMode && this.props.displayMode !== 'custom')
             this.setState({
                 nodes: this.props.nodes,
                 edges: this.props.edges,
-                numberOfColors: this.props.nodes.length,
-            })
+                displayMode: this.props.displayMode,
+            }, () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
     addNode() {
@@ -92,12 +92,11 @@ export default class ColoredGraph extends React.Component {
                     ...prevState.nodes,
                     {
                         id: newId,
-                        group: prevState.numberOfColors,
-                        color: COLORS[prevState.numberOfColors],
+                        group: 0,
+                        color: COLORS[0],
                     }
                 ],
                 edges: [...prevState.edges, ...newEdges],
-                numberOfColors: prevState.numberOfColors + 1,
             }
         }, () => setTimeout(() => this.minimalKColoring(), 10))
     }
