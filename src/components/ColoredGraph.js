@@ -1,5 +1,6 @@
 import {ForceGraph2D} from "react-force-graph";
 import React from "react";
+import {randomInteger} from "../lib/helpers";
 
 export const COLORS = [
     "#28536b",
@@ -50,22 +51,6 @@ export default class ColoredGraph extends React.Component {
         }
     }
 
-    insertRandomNode() {
-        const highestIndex = this.state.nodes.length - 1
-        let newEdges = []
-        const numberOfEdges = Math.floor(Math.random() * 2 + 1)
-        for (let i = 0; i < numberOfEdges; i++) {
-            newEdges.push({
-                "source": highestIndex,
-                "target": Math.floor((i + Math.random()) * highestIndex / numberOfEdges)
-            })
-        }
-        this.setState(
-            prevState => ({edges: [...prevState.edges, ...newEdges]}),
-            () => setTimeout(() => this.findMinimalKColoring(), 10)
-        )
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps !== this.props && this.props.nodes !== undefined)
             this.setState({
@@ -75,19 +60,33 @@ export default class ColoredGraph extends React.Component {
             })
     }
 
-    addNode ()  {
+    addNode() {
         this.setDisplayMode('custom')
-        this.setState(prevState => ({
-            nodes: [
-                ...prevState.nodes,
-                {
-                    id: prevState.nodes.length,
-                    group: prevState.numberOfColors,
-                    color: COLORS[prevState.numberOfColors],
-                }
-            ],
-            numberOfColors: prevState.numberOfColors + 1,
-        }), this.insertRandomNode)
+        this.setState(prevState => {
+            const newId = prevState.nodes.length
+            const numberOfEdges = randomInteger(1, 2)
+
+            let newEdges = []
+            for (let i = 0; i < numberOfEdges; i++) {
+                newEdges.push({
+                    "source": newId,
+                    "target": Math.floor((i + Math.random()) * newId / numberOfEdges)
+                })
+            }
+
+            return {
+                nodes: [
+                    ...prevState.nodes,
+                    {
+                        id: newId,
+                        group: prevState.numberOfColors,
+                        color: COLORS[prevState.numberOfColors],
+                    }
+                ],
+                edges: [...prevState.edges, ...newEdges],
+                numberOfColors: prevState.numberOfColors + 1,
+            }
+        }, () => setTimeout(() => this.findMinimalKColoring(), 10))
     }
 
     render() {
