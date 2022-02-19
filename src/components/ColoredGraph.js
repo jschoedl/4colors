@@ -125,10 +125,13 @@ export default class ColoredGraph extends React.Component {
     }
 
     minimalKColoring() {
-        for (let k = 1; k <= 10; k++)
+        for (let k = 1; k <= 10; k++) {
+            console.log(k)
             if (this.findKColoring(k)) {
-                this.setChromaticNumber(k)
+                this.setChromaticNumber("= "+k)
                 return
             }
+        }
+        this.setChromaticNumber("> 10")
     }
 }

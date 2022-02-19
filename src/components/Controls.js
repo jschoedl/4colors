@@ -16,6 +16,7 @@ export default function Controls(props) {
             <DisplayModeButton>Empty Graph</DisplayModeButton>
             <DisplayModeButton>Pentagon</DisplayModeButton>
             <DisplayModeButton>Hexagon</DisplayModeButton>
+            <DisplayModeButton>K5</DisplayModeButton>
         </Stack>
     </div>
 }
