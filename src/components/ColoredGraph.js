@@ -78,7 +78,7 @@ export default class ColoredGraph extends React.Component {
         this.setDisplayMode('custom')
         this.setState(prevState => ({
                 nodes: [...prevState.nodes, {
-                    id: Math.max(prevState.nodes.map(node => node.id)) + 1,
+                    id: Math.max(prevState.nodes.map(node => node.id)) + 1 || 0,
                     group: 0,
                     color: COLORS[0],
                 }],
