@@ -65,20 +65,24 @@ export default class ColoredGraph extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.displayMode !== this.state.displayMode && this.props.displayMode !== 'custom')
-            this.setState({
-                nodes: this.props.nodes,
-                edges: this.props.edges,
-                displayMode: this.props.displayMode,
-                freezeLayout: false,
-            }, () => setTimeout(() => this.minimalKColoring(), 10))
+        if (this.props.displayMode !== this.state.displayMode) {
+            if (this.props.displayMode !== 'custom')
+                this.setState({
+                    nodes: this.props.nodes,
+                    edges: this.props.edges,
+                    displayMode: this.props.displayMode,
+                    freezeLayout: false,
+                }, () => setTimeout(() => this.minimalKColoring(), 10))
+            else
+                this.setState({displayMode: this.props.displayMode})
+        }
     }
 
     addNode() {
         this.setDisplayMode('custom')
         this.setState(prevState => ({
                 nodes: [...prevState.nodes, {
-                    id: Math.max(prevState.nodes.map(node => node.id)) + 1 || 0,
+                    id: Math.max(...prevState.nodes.map(node => node.id || 0)) + 1,
                     group: 0,
                     color: COLORS[0],
                 }],
