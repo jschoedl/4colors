@@ -70,6 +70,7 @@ export default class ColoredGraph extends React.Component {
                 nodes: this.props.nodes,
                 edges: this.props.edges,
                 displayMode: this.props.displayMode,
+                freezeLayout: false,
             }, () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
