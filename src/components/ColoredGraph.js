@@ -1,6 +1,6 @@
 import {ForceGraph2D} from "react-force-graph";
 import React from "react";
-import {containedEdges, incidentEdges, isProperColoring} from "../lib/graphHelpers";
+import {containedEdges, incidentEdges, isProperColoring, noProperColoring} from "../lib/graphHelpers";
 
 export const COLORS = [
     "#264653",
@@ -16,6 +16,7 @@ export const COLORS = [
 ]
 
 export const SELECTION_COLOR = "#3973ff"
+export const UNDEFINED_COLOR = "#000000"
 
 export default class ColoredGraph extends React.Component {
     constructor(props) {
@@ -130,6 +131,7 @@ export default class ColoredGraph extends React.Component {
                 cooldownTicks={this.state.freezeLayout ? 0 : Infinity}
                 nodeRelSize={4}
                 linkWidth={6}
+                linkCurvature={edge => edge.source === edge.target}
                 onBackgroundClick={handleBackgroundClick}
                 onNodeClick={handleNodeClick}
                 onNodeRightClick={removeNode}
@@ -150,13 +152,23 @@ export default class ColoredGraph extends React.Component {
     }
 
     minimalKColoring() {
-        for (let k = 1; k <= 10; k++) {
-            console.log(k)
-            if (this.findKColoring(k)) {
-                this.setChromaticNumber("= " + k)
-                return
+        if (!noProperColoring(this.state.edges)) {
+            for (let k = 1; k <= 10; k++) {
+                console.log(k)
+                if (this.findKColoring(k)) {
+                    this.setChromaticNumber("= " + k)
+                    return
+                }
             }
-        }
-        this.setChromaticNumber("> 10")
+            this.setChromaticNumber("> 10")
+        } else
+            this.setChromaticNumber("= ∞")
+
+        let nodesCopy = [...this.state.nodes]
+        for (let node of nodesCopy)
+            node.color = UNDEFINED_COLOR
+        this.setState({
+            nodes: nodesCopy,
+        })
     }
 }

@@ -8,6 +8,13 @@ export function isProperColoring(nodes, edges) {
     return true;
 }
 
+export function noProperColoring(edges){
+    for (let edge of edges)
+        if (edge.source === edge.target)
+            return true
+    return false
+}
+
 export function incidentEdges(node, edges) {
     return edges.filter(edge => edge.source.id === node.id || edge.target.id === node.id)
 }
