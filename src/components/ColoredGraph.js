@@ -25,6 +25,7 @@ export default class ColoredGraph extends React.Component {
             edges: props.edges,
             displayMode: props.displayMode,
             selectedNode: null,
+            freezeLayout: false,
         }
         this.setDisplayMode = props.setDisplayMode
         this.setChromaticNumber = props.setChromaticNumber
@@ -79,6 +80,7 @@ export default class ColoredGraph extends React.Component {
                     group: 0,
                     color: COLORS[0],
                 }],
+                freezeLayout: true,
             }), () => setTimeout(() => this.minimalKColoring(), 10)
         )
     }
@@ -89,7 +91,8 @@ export default class ColoredGraph extends React.Component {
             edges: [...prevState.edges, {
                 source: source,
                 target: target,
-            }]
+            }],
+            freezeLayout: false,
         }), () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
@@ -97,7 +100,8 @@ export default class ColoredGraph extends React.Component {
         this.setDisplayMode('custom')
         this.setState(prevState => ({
             nodes: prevState.nodes.filter(node => node !== nodeToRemove),
-            edges: prevState.edges.filter(edge => !incidentEdges(nodeToRemove, prevState.edges).includes(edge))
+            edges: prevState.edges.filter(edge => !incidentEdges(nodeToRemove, prevState.edges).includes(edge)),
+            freezeLayout: false,
         }), () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
@@ -113,7 +117,7 @@ export default class ColoredGraph extends React.Component {
             this.addEdge(this.state.selectedNode, node)
             this.setState({selectedNode: null})
         } else
-            this.setState({selectedNode: node})
+            this.setState({selectedNode: node, freezeLayout: true})
     }
 
     render() {
@@ -123,6 +127,7 @@ export default class ColoredGraph extends React.Component {
         return <div className="background">
             <ForceGraph2D
                 graphData={{nodes: this.state.nodes, links: this.state.edges}}
+                cooldownTicks={this.state.freezeLayout ? 0 : Infinity}
                 nodeRelSize={4}
                 linkWidth={6}
                 onBackgroundClick={handleBackgroundClick}
