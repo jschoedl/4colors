@@ -78,7 +78,7 @@ export default class ColoredGraph extends React.Component {
         this.setDisplayMode('custom')
         this.setState(prevState => ({
                 nodes: [...prevState.nodes, {
-                    id: Math.max(prevState.nodes.map(node => node.id)),
+                    id: Math.max(prevState.nodes.map(node => node.id)) + 1,
                     group: 0,
                     color: COLORS[0],
                 }],
@@ -122,10 +122,18 @@ export default class ColoredGraph extends React.Component {
             this.setState({selectedNode: node, freezeLayout: true})
     }
 
+    drawNode(node, ctx) {
+        ctx.fillStyle = node === this.state.selectedNode ? SELECTION_COLOR : node.color
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI, false)
+        ctx.fill()
+    }
+
     render() {
         const removeNode = this.removeNode.bind(this),
             handleBackgroundClick = this.handleBackgroundClick.bind(this),
-            handleNodeClick = this.handleNodeClick.bind(this)
+            handleNodeClick = this.handleNodeClick.bind(this),
+            drawNode = this.drawNode.bind(this)
         return <div className="background">
             <ForceGraph2D
                 graphData={{nodes: this.state.nodes, links: this.state.edges}}
@@ -136,7 +144,7 @@ export default class ColoredGraph extends React.Component {
                 onBackgroundClick={handleBackgroundClick}
                 onNodeClick={handleNodeClick}
                 onNodeRightClick={removeNode}
-                nodeColor={node => node === this.state.selectedNode ? SELECTION_COLOR : node.color}
+                nodeCanvasObject={drawNode}
             />
         </div>
     }
@@ -155,7 +163,6 @@ export default class ColoredGraph extends React.Component {
     minimalKColoring() {
         if (!noProperColoring(this.state.edges)) {
             for (let k = 1; k <= 10; k++) {
-                console.log(k)
                 if (this.findKColoring(k)) {
                     this.setChromaticNumber("= " + k)
                     return
