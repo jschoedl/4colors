@@ -1,7 +1,6 @@
 import {ForceGraph2D} from "react-force-graph";
 import React from "react";
-import {randomInteger, withoutDuplicateObjects} from "../lib/helpers";
-import {containedEdges, isProperColoring} from "../lib/graphHelpers";
+import {containedEdges, incidentEdges, isProperColoring} from "../lib/graphHelpers";
 
 export const COLORS = [
     "#264653",
@@ -16,6 +15,8 @@ export const COLORS = [
     "#483d03"
 ]
 
+export const SELECTION_COLOR = "#3973ff"
+
 export default class ColoredGraph extends React.Component {
     constructor(props) {
         super(props)
@@ -23,6 +24,7 @@ export default class ColoredGraph extends React.Component {
             nodes: props.nodes,
             edges: props.edges,
             displayMode: props.displayMode,
+            selectedNode: null,
         }
         this.setDisplayMode = props.setDisplayMode
         this.setChromaticNumber = props.setChromaticNumber
@@ -71,44 +73,62 @@ export default class ColoredGraph extends React.Component {
 
     addNode() {
         this.setDisplayMode('custom')
-        this.setState(prevState => {
-            const newId = prevState.nodes.length
-            let newEdges = []
+        this.setState(prevState => ({
+                nodes: [...prevState.nodes, {
+                    id: Math.max(prevState.nodes.map(node => node.id)),
+                    group: 0,
+                    color: COLORS[0],
+                }],
+            }), () => setTimeout(() => this.minimalKColoring(), 10)
+        )
+    }
 
-            if (prevState.nodes.length) {
-                const numberOfEdges = randomInteger(1, 2)
-                for (let i = 0; i < numberOfEdges; i++) {
-                    newEdges.push({
-                        "source": newId,
-                        "target": randomInteger(0, newId - 1)
-                    })
-                }
-            }
+    addEdge(source, target) {
+        this.setDisplayMode('custom')
+        this.setState(prevState => ({
+            edges: [...prevState.edges, {
+                source: source,
+                target: target,
+            }]
+        }), () => setTimeout(() => this.minimalKColoring(), 10))
+    }
 
-            newEdges = withoutDuplicateObjects(newEdges)
+    removeNode(nodeToRemove) {
+        this.setDisplayMode('custom')
+        this.setState(prevState => ({
+            nodes: prevState.nodes.filter(node => node !== nodeToRemove),
+            edges: prevState.edges.filter(edge => !incidentEdges(nodeToRemove, prevState.edges).includes(edge))
+        }), () => setTimeout(() => this.minimalKColoring(), 10))
+    }
 
-            return {
-                nodes: [
-                    ...prevState.nodes,
-                    {
-                        id: newId,
-                        group: 0,
-                        color: COLORS[0],
-                    }
-                ],
-                edges: [...prevState.edges, ...newEdges],
-            }
-        }, () => setTimeout(() => this.minimalKColoring(), 10))
+    handleBackgroundClick() {
+        if (this.state.selectedNode)
+            this.setState({selectedNode: null})
+        else
+            this.addNode()
+    }
+
+    handleNodeClick(node) {
+        if (this.state.selectedNode) {
+            this.addEdge(this.state.selectedNode, node)
+            this.setState({selectedNode: null})
+        } else
+            this.setState({selectedNode: node})
     }
 
     render() {
-        const addNode = this.addNode.bind(this)
+        const removeNode = this.removeNode.bind(this),
+            handleBackgroundClick = this.handleBackgroundClick.bind(this),
+            handleNodeClick = this.handleNodeClick.bind(this)
         return <div className="background">
             <ForceGraph2D
                 graphData={{nodes: this.state.nodes, links: this.state.edges}}
                 nodeRelSize={4}
                 linkWidth={6}
-                onBackgroundClick={addNode}
+                onBackgroundClick={handleBackgroundClick}
+                onNodeClick={handleNodeClick}
+                onNodeRightClick={removeNode}
+                nodeColor={node => node === this.state.selectedNode ? SELECTION_COLOR : node.color}
             />
         </div>
     }
