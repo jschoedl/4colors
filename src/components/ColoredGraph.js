@@ -21,42 +21,61 @@ export const UNDEFINED_COLOR = "#000000"
 export default class ColoredGraph extends React.Component {
     constructor(props) {
         super(props)
+        // Sobald sich dieser State ändert, wird die Methode render() neu aufgerufen.
+        // Dadurch aktualisiert sich die Darstellung automatisch, wenn etwas am Graphen verändert wurde.
         this.state = {
-            nodes: props.nodes,
-            edges: props.edges,
-            displayMode: props.displayMode,
-            selectedNode: null,
-            freezeLayout: false,
+            nodes: props.nodes, // Array mit Objekten, siehe src/lib/graphExamples.js
+            edges: props.edges, // Array mit Objekten, siehe src/lib/graphExamples.js
+            displayMode: props.displayMode, // aktuell dargestellter Graph ('custom') oder eines der Beispiele
+            selectedNode: null, // aktuell ausgewählte Node
+            freezeLayout: false, // true, wenn sich der Graph nicht bewegen soll
         }
-        this.setDisplayMode = props.setDisplayMode
-        this.setChromaticNumber = props.setChromaticNumber
+        this.setDisplayMode = props.setDisplayMode // Methodenaufruf setzt die aktuelle displayMode global
+        this.setChromaticNumber = props.setChromaticNumber // Methodenaufruf setzt die aktuelle chromatische Zahl global
     }
 
+    /**
+    * Sucht mit Backtracking nach einer k-Färbung des Graphen.
+    * 
+    * Wendet eine Färbung an und gibt true zurück, falls dies möglich ist.
+    * Andernfalls wird das Ergebnis verworfen und false zurückgegeben.
+    */
     findKColoring(k) {
-        let nextIndex = 0;
+        // Starte mit einem leeren Graphen und einer Kopie des ursprünglichen Graphen.
+        let nextIndex = 0
         let newNodes = [], newEdges = []
         let initialNodes = [...this.state.nodes], initialEdges = [...this.state.edges]
 
         while (true) {
             if (isProperColoring(newNodes, newEdges)) {
+                // falls die aktuelle Färbung gültig ist:
                 if (initialNodes.length === newNodes.length)
+                    // Abbruch, sobald alle Knoten und Kanten mit gültiger Färbung eingefügt wurden
                     break;
 
+                // füge einen Knoten hinzu
                 newNodes.push(initialNodes[nextIndex])
                 newNodes[newNodes.length - 1].group = 0
+                
+                // betrachte alle Kanten, die zwischem Knoten des neuen Graphen gebildet werden
                 newEdges = containedEdges(newNodes, initialEdges)
                 nextIndex++
             } else {
+                // falls die aktuelle Färbung ungültig ist:
+                // lösche alle hinteren Knoten aus der Gruppe k, da ihre Gruppe nicht erhöht werden kann
                 while (newNodes[newNodes.length - 1].group === k - 1) {
                     newNodes.pop()
                     nextIndex--
                     if (nextIndex === 0)
+                        // k-Färbung nicht möglich (alle Kombinationen sind fehlgeschlagen)
                         return false;
                 }
+                // erhöhe die Gruppe beim aktuellen Knoten
                 newNodes[newNodes.length - 1].group++
             }
         }
 
+        // Anwenden der Färbung
         this.setState({
             nodes: newNodes,
             edges: initialEdges,
@@ -64,6 +83,9 @@ export default class ColoredGraph extends React.Component {
         return true;
     }
 
+    /**
+    * Diese Funktion wird aufgerufen, wenn eine Änderung am Graphen stattfand.
+    */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.displayMode !== this.state.displayMode) {
             if (this.props.displayMode !== 'custom')
