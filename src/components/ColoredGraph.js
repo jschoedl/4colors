@@ -38,7 +38,7 @@ export default class ColoredGraph extends React.Component {
         let initialNodes = [...this.state.nodes], initialEdges = [...this.state.edges]
 
         while (true) {
-            newNodes = containedEdges(newNodes, initialEdges)
+            newEdges = containedEdges(newNodes, initialEdges)
             if (isProperColoring(newNodes, newEdges)) {
                 if (initialNodes.length === newNodes.length)
                     break;
