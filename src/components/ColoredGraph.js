@@ -47,6 +47,8 @@ export default class ColoredGraph extends React.Component {
         let initialNodes = [...this.state.nodes], initialEdges = [...this.state.edges]
 
         while (true) {
+            // betrachte alle Kanten, die zwischem Knoten des neuen Graphen gebildet werden
+            newEdges = containedEdges(newNodes, initialEdges)
             if (isProperColoring(newNodes, newEdges)) {
                 // falls die aktuelle Färbung gültig ist:
                 if (initialNodes.length === newNodes.length)
@@ -56,9 +58,6 @@ export default class ColoredGraph extends React.Component {
                 // füge einen Knoten hinzu
                 newNodes.push(initialNodes[nextIndex])
                 newNodes[newNodes.length - 1].group = 0
-                
-                // betrachte alle Kanten, die zwischem Knoten des neuen Graphen gebildet werden
-                newEdges = containedEdges(newNodes, initialEdges)
                 nextIndex++
             } else {
                 // falls die aktuelle Färbung ungültig ist:
