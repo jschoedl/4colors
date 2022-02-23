@@ -28,7 +28,7 @@ export default class ColoredGraph extends React.Component {
             edges: props.edges, // Array mit Objekten, siehe src/lib/graphExamples.js
             displayMode: props.displayMode, // aktuell dargestellter Graph ('custom') oder eines der Beispiele
             selectedNode: null, // aktuell ausgewählte Node
-            freezeLayout: false, // true, wenn sich der Graph nicht bewegen soll
+            freezeLayout: false, // true, wenn sich die Visualisierung des Graphen nicht bewegen soll
         }
         this.setDisplayMode = props.setDisplayMode // Methodenaufruf setzt die aktuelle displayMode global
         this.setChromaticNumber = props.setChromaticNumber // Methodenaufruf setzt die aktuelle chromatische Zahl global
@@ -84,11 +84,13 @@ export default class ColoredGraph extends React.Component {
     }
 
     /**
-    * Diese Funktion wird aufgerufen, wenn eine Änderung am Graphen stattfand.
+    * Diese Methode wird aufgerufen, wenn eine Änderung am Graphen stattfand.
     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.displayMode !== this.state.displayMode) {
             if (this.props.displayMode !== 'custom')
+                // falls gerade ein Beispiel geladen wurde (d.h. nicht der Darstellungsmodus 'custom' vorliegt):
+                // aktualisiere den Graphen entsprechend und suche anschließend eine neue optimale k-Färbung
                 this.setState({
                     nodes: this.props.nodes,
                     edges: this.props.edges,
@@ -96,12 +98,18 @@ export default class ColoredGraph extends React.Component {
                     freezeLayout: false,
                 }, () => setTimeout(() => this.minimalKColoring(), 10))
             else
+                // falls gerade eine Veränderung vom Nutzer stattfand: propagiere den Darstellungsmodus 'custom' an den Graphen
                 this.setState({displayMode: this.props.displayMode})
         }
     }
 
+    /**
+    * Fügt einen neuen Knoten ohne Kanten zum Graphen hinzu.
+    */
     addNode() {
+        // Ausgrauung des ggf. ausgewählten Beispiels wird aufgehoben
         this.setDisplayMode('custom')
+        // Knoten wird hinzugefügt, woraufhin eine neue optimale k-Färbung gesucht wird
         this.setState(prevState => ({
                 nodes: [...prevState.nodes, {
                     id: Math.max(...prevState.nodes.map(node => node.id), 0) + 1,
@@ -113,8 +121,13 @@ export default class ColoredGraph extends React.Component {
         )
     }
 
+    /**
+    * Fügt eine neue Knoten Kante zwischen zwei Knoten-IDs zum Graph hinzu.
+    */
     addEdge(source, target) {
+        // Ausgrauung des ggf. ausgewählten Beispiels wird aufgehoben
         this.setDisplayMode('custom')
+        // Kante wird hinzugefügt, woraufhin eine neue optimale k-Färbung gesucht wird
         this.setState(prevState => ({
             edges: [...prevState.edges, {
                 source: source,
@@ -123,9 +136,14 @@ export default class ColoredGraph extends React.Component {
             freezeLayout: false,
         }), () => setTimeout(() => this.minimalKColoring(), 10))
     }
-
+    
+    /**
+    * Entfernt einen Knoten einer ID aus dem Graphen.
+    */
     removeNode(nodeToRemove) {
+        // Ausgrauung des ggf. ausgewählten Beispiels wird aufgehoben
         this.setDisplayMode('custom')
+        // Knoten wird mit allen inzidenten Kanten entfernt, woraufhin eine neue optimale k-Färbung gesucht wird
         this.setState(prevState => ({
             nodes: prevState.nodes.filter(node => node !== nodeToRemove),
             edges: prevState.edges.filter(edge => !incidentEdges(nodeToRemove, prevState.edges).includes(edge)),
@@ -133,21 +151,34 @@ export default class ColoredGraph extends React.Component {
         }), () => setTimeout(() => this.minimalKColoring(), 10))
     }
 
+    /**
+    * Verarbeite einen Linksklick auf den Hintergrund.
+    */
     handleBackgroundClick() {
         if (this.state.selectedNode)
+            // entferne die aktuelle Auswahl
             this.setState({selectedNode: null})
         else
+            // füge einen neuen Knoten hinzu, falls keine Auswahl vorliegt
             this.addNode()
     }
 
+    /**
+    * Verarbeite einen Linksklick auf einen Knoten.
+    */
     handleNodeClick(node) {
         if (this.state.selectedNode) {
+            // füge eine Kante zum bereits ausgewählten Knoten hinzu
             this.addEdge(this.state.selectedNode, node)
             this.setState({selectedNode: null})
         } else
+            // wähle den Knoten aus und friere die Darstellung ein
             this.setState({selectedNode: node, freezeLayout: true})
     }
 
+    /**
+    * Stelle einen Knoten dar.
+    */
     drawNode(node, ctx) {
         ctx.fillStyle = node === this.state.selectedNode ? SELECTION_COLOR : node.color
         ctx.beginPath()
@@ -155,6 +186,9 @@ export default class ColoredGraph extends React.Component {
         ctx.fill()
     }
 
+    /**
+    * Stelle den Graphen dar.
+    */
     render() {
         const removeNode = this.removeNode.bind(this),
             handleBackgroundClick = this.handleBackgroundClick.bind(this),
@@ -175,6 +209,9 @@ export default class ColoredGraph extends React.Component {
         </div>
     }
 
+    /**
+    * Färbe alle Knoten entsprechend der Gruppen, denen sie vom Algorithmus zugeordnet wurden.
+    */
     updateColors() {
         let newNodes = [...this.state.nodes]
         newNodes.forEach(node => {
@@ -186,8 +223,12 @@ export default class ColoredGraph extends React.Component {
         })
     }
 
+    /**
+    * Ermittle die chromatische Zahl und Färbe den Graphen damit.
+    */
     minimalKColoring() {
         if (!noProperColoring(this.state.edges)) {
+            // Beginne mit k=1 und erhöhe k, bis eine gültige Färbung existiert.
             for (let k = 1; k <= 10; k++) {
                 if (this.findKColoring(k)) {
                     this.setChromaticNumber("= " + k)
@@ -196,8 +237,10 @@ export default class ColoredGraph extends React.Component {
             }
             this.setChromaticNumber("> 10")
         } else
+            // Setze die chromatische Zahl auf ∞, wenn ein Knoten mit sich selbst verbunden ist.
             this.setChromaticNumber("= ∞")
 
+        // Färbe alle Knoten schwarz, wenn keine Färbung gefunden wurde.
         let nodesCopy = [...this.state.nodes]
         for (let node of nodesCopy)
             node.color = UNDEFINED_COLOR
