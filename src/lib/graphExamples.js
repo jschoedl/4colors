@@ -5,7 +5,7 @@ export default function getGraph(label) {
             nodes = []
             edges = []
             break
-        case 'Hexagon':
+        case 'C6':
             nodes = [
                 {id: 0},
                 {id: 1},
@@ -23,7 +23,7 @@ export default function getGraph(label) {
                 {source: 2, target: 0},
             ]
             break
-        case 'Pentagon':
+        case 'C5':
             nodes = [
                 {id: 0},
                 {id: 1},
