@@ -13,11 +13,11 @@ Visit [the website](https://4colors.jschoedl.ml) to try it out!
 
 > <img src="/docs/c5.png" width=500px>
 >
-> C5, another planar graph.
+> <img src="https://render.githubusercontent.com/render/math?math=C_5">, another planar graph.
 
 > <img src="/docs/k5.png" width=500px>
 >
-> K5, a non-planar graph with a chromatic number of 5.
+> <img src="https://render.githubusercontent.com/render/math?math=K_5">, a non-planar graph with a chromatic number of 5.
 
 ## Running it locally
 Make sure [Node.js and npm](https://nodejs.org/en/download/) are installed, clone this repository and open its folder in a terminal.
