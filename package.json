@@ -9,7 +9,7 @@
     "react-bootstrap": "^2.2.3",
     "react-dom": "^18.0.0",
     "react-force-graph": "^1.41.12",
-    "react-scripts": "5.0.0"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
