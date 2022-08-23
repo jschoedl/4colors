@@ -8,7 +8,7 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.4.0",
     "react-dom": "^18.2.0",
-    "react-force-graph": "^1.41.12",
+    "react-force-graph": "^1.41.14",
     "react-scripts": "5.0.1"
   },
   "scripts": {
