@@ -1,6 +1,6 @@
 # Chromatic Number Visualizer
 ## Usage
-Visit [the website](https://4colors.jschoedl.ml) to try it out!
+Visit [the website](https://jschoedl.github.io/4colors/) to try it out!
 * click on the background to create nodes
 * click on source and target node to create a new edge
 * right click on a node to remove it
